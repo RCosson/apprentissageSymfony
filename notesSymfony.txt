@@ -1,0 +1,58 @@
+Le répertoire /app
+
+Ce répertoire contient tout ce qui concerne votre site Internet… sauf son code source. Assez étrange, me direz-vous. En fait, c'est simplement pour séparer le code source, qui fait la logique de votre site, de sa configuration. Ce sont des fichiers qui concernent l'entièreté de votre site, contrairement aux fichiers de code source qui seront découpés par fonctionnalité de votre site. Dans Symfony, un projet de site Internet est une application, simple question de vocabulaire. Le répertoire /app est donc le raccourci pour « application ».
+
+Le répertoire /bin
+
+Ce répertoire contient tous les exécutable dont nous allons nous servir pendant le développement. Par exécutable, j'entends des commandes PHP, comme on l'a fait avec l'installateur Symfony au chapitre précédent. Je vous le montrerai pas à pas.
+
+Le répertoire /src
+
+Voici enfin le répertoire dans lequel on mettra le code source ! C'est ici que l'on passera le plus clair de notre temps. Dans ce répertoire, nous organiserons notre code en bundles, des briques de notre application, dont nous verrons la définition plus loin.
+
+Vous pouvez voir que ce répertoire n'est pas vide : il contient en effet quelques fichiers exemples, fournis par Symfony. Nous les supprimerons plus tard dans ce cours.
+
+Le répertoire /tests
+
+Ce paragraphe contient tous les tests de votre application. Les tests étant un pan entier du développement et indépendant de Symfony, nous n'en parlerons pas dans ce cours. Sachez cependant qu'ils sont important pour bien développer, je vous inviterai à vous renseigner dessus.
+
+Le répertoire /var
+
+Nous avons déjà parlé de ce répertoire. Il contient tout ce que Symfony va écrire durant son process : les logs, le cache, et d'autres fichiers nécessaires à son bon fonctionnement. Nous n'écrirons jamais dedans nous même.
+
+Le répertoire /vendor
+
+Ce répertoire contient toutes les bibliothèques externes à notre application. Dans ces bibliothèques externes, j'inclus Symfony ! Vous pouvez parcourir ce répertoire ; vous y trouverez des bibliothèques comme Doctrine, Twig, SwiftMailer, etc.
+
+Et une bibliothèque, c'est quoi exactement ?
+
+Une bibliothèque est une sorte de boîte noire qui remplit une fonction bien précise, et dont on peut se servir dans notre code. Par exemple, la bibliothèque SwiftMailer permet d'envoyer des e-mails. On ne sait pas comment elle fonctionne (principe de la boîte noire), mais on sait comment s'en servir : on pourra donc envoyer des e-mails très facilement, juste en apprenant rapidement à utiliser la bibliothèque.
+Le répertoire /web
+
+Ce répertoire contient tous les fichiers destinés à vos visiteurs : images, fichiers CSS et JavaScript, etc. Il contient également le contrôleur frontal (app.php), dont nous parlerons juste après.
+
+En fait, c'est le seul répertoire qui devrait être accessible à vos visiteurs. Les autres répertoires ne sont pas censés être accessibles (ce sont vos fichiers de code source, ils vous regardent vous, pas vos visiteurs), c'est pourquoi vous y trouverez des fichiers .htaccess interdisant l'accès depuis l'extérieur. On utilisera donc toujours des URL du type http://localhost/Symfony/web/… au lieu de simplement http://localhost/Symfony/… .
+
+À retenir
+
+Retenez donc que nous passerons la plupart de notre temps dans le répertoire /src, à travailler sur nos bundles. On touchera également pas mal au répertoire /app pour configurer notre application. Et lorsque nous installerons des bundles téléchargés, nous le ferons dans le répertoire /vendor.
+
+MVC signifie « Modèle / Vue / Contrôleur ». C'est un découpage très répandu pour développer les sites Internet, car il sépare les couches selon leur logique propre :
+
+    Le Contrôleur (ou Controller) : son rôle est de générer la réponse à la requête HTTP demandée par notre visiteur. Il est la couche qui se charge d'analyser et de traiter la requête de l'utilisateur. Le contrôleur contient la logique de notre site Internet et va se contenter « d'utiliser » les autres composants : les modèles et les vues. Concrètement, un contrôleur va récupérer, par exemple, les informations sur l'utilisateur courant, vérifier qu'il a le droit de modifier tel article, récupérer cet article et demander la page du formulaire d'édition de l'article. C'est tout bête, avec quelques if(), on s'en sort très bien.
+
+    Le Modèle (ou Model) : son rôle est de gérer vos données et votre contenu. Reprenons l'exemple de l'article. Lorsque je dis « le contrôleur récupère l'article », il va en fait faire appel au modèle Article et lui dire : « donne-moi l'article portant l'id 5 ». C'est le modèle qui sait comment récupérer cet article, généralement via une requête au serveur SQL, mais ce pourrait être depuis un fichier texte ou ce que vous voulez. Au final, il permet au contrôleur de manipuler les articles, mais sans savoir comment les articles sont stockés, gérés, etc. C'est une couche d'abstraction.
+
+    La Vue (ou View) : son rôle est d'afficher les pages. Reprenons encore l'exemple de l'article. Ce n'est pas le contrôleur qui affiche le formulaire, il ne fait qu'appeler la bonne vue. Si nous avons une vue Formulaire, les balises HTML du formulaire d'édition de l'article y seront et au final le contrôleur ne fera qu'afficher cette vue sans savoir vraiment ce qu'il y a dedans. En pratique, c'est le designer d'un projet qui travaille sur les vues. Séparer vues et contrôleurs permet aux designers et développeurs PHP de travailler ensemble sans se marcher dessus.
+
+Au final, si vous avez bien compris, le contrôleur ne contient que du code très simple, car il se contente d'utiliser des modèles et des vues en leur attribuant des tâches précises. Il agit un peu comme un chef d'orchestre, qui n'agite qu'une baguette alors que ses musiciens jouent des instruments complexes.
+
+En le parcourant avec des mots, voici ce que cela donne :
+
+    Le visiteur demande la page /platform ;
+
+    Le contrôleur frontal reçoit la requête, charge le Kernel et la lui transmet ;
+
+    Le Kernel demande au Routeur quel contrôleur exécuter pour l'URL /platform. Ce Routeur est un composant Symfony qui fait la correspondance entre URL et contrôleurs, nous l'étudierons bien sûr dans un prochain chapitre. Le Routeur fait donc son travail, et dit au Kernel qu'il faut exécuter le contrôleur OCPlatform:Advert ;
+
+    Le Kernel exécute donc ce contrôleur. Le contrôleur demande au modèle Annonce la liste des annonces, puis la donne à la vue ListeAnnonces pour qu'elle construise la page HTML et la lui retourne. Une fois cela fini, le contrôleur envoie au visiteur la page HTML complète.
